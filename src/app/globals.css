@@ -4,27 +4,27 @@
 
 @layer base {
   :root {
-    --background: 220 60% 97%; /* Light bluish white */
-    --foreground: 220 25% 25%; /* Dark grayish blue */
-    --card: 0 0% 100%; /* White */
-    --card-foreground: 220 25% 25%;
+    --background: 210 45% 98%; /* Slightly cooler white background */
+    --foreground: 225 30% 15%; /* Darker text for better contrast */
+    --card: 0 0% 100%; /* Pure white for cards */
+    --card-foreground: 225 30% 15%; /* Matching foreground for cards */
     --popover: 0 0% 100%;
-    --popover-foreground: 220 25% 25%;
+    --popover-foreground: 225 30% 15%;
     --primary: 245 76% 58%; /* Vibrant Blue-Purple */
     --primary-hsl: 245, 76%, 58%; /* For direct HSL use, e.g. hsla(var(--primary-hsl), 0.1) */
     --primary-foreground: 0 0% 100%; /* White */
     --primary-foreground-hsl-raw: 0, 0%, 100%; /* Raw HSL for primary-foreground */
     --primary-foreground-hsl: var(--primary-foreground-hsl-raw);
-    --secondary: 220 50% 90%; /* Lighter blue-gray for secondary elements */
-    --secondary-foreground: 230 40% 40%; /* Darker blue for text on secondary */
-    --muted: 220 30% 94%; /* Muted light blue/gray */
-    --muted-foreground: 220 20% 50%; /* Medium gray-blue for muted text */
-    --accent: 45 100% 58%; /* Bright Yellow/Orange for highlights */
-    --accent-foreground: 220 25% 25%; /* Dark text on accent */
+    --secondary: 220 45% 92%; /* More saturated secondary for better visibility */
+    --secondary-foreground: 230 45% 35%; /* Darker text on secondary */
+    --muted: 220 25% 94%; /* Muted light blue/gray */
+    --muted-foreground: 220 25% 40%; /* Darker for better contrast */
+    --accent: 45 95% 55%; /* More vibrant accent color */
+    --accent-foreground: 225 30% 15%; /* Dark text on accent */
     --destructive: 0 84.2% 60.2%; /* Standard red */
     --destructive-foreground: 0 0% 98%;
-    --border: 220 30% 90%; /* Light border */
-    --input: 220 30% 93%; /* Light input background */
+    --border: 220 25% 85%; /* Slightly darker border for visibility */
+    --input: 220 25% 93%; /* Light input background */
     --ring: 245 76% 65%; /* Slightly lighter primary for ring */
     --radius: 0.8rem; /* Increased radius for more rounded look */
 
@@ -34,22 +34,22 @@
 
     /* Specific icon/text colors from image */
     /* Storing raw HSL values for direct use where 'color: hsl(var(--text-kcal-raw))' is needed */
-    --text-kcal-raw: 350, 80%, 60%;
-    --text-carbs-raw: 40, 90%, 60%;
-    --text-protein-raw: 180, 60%, 50%;
-    --text-fat-raw: 260, 60%, 70%;
+    --text-kcal-raw: 350, 90%, 55%; /* More saturated for light mode */
+    --text-carbs-raw: 40, 95%, 50%;
+    --text-protein-raw: 180, 70%, 40%;
+    --text-fat-raw: 260, 70%, 60%;
     
     --text-kcal: hsl(var(--text-kcal-raw));
     --text-carbs: hsl(var(--text-carbs-raw));
     --text-protein: hsl(var(--text-protein-raw));
     --text-fat: hsl(var(--text-fat-raw));
     
-    --add-button-bg: 170 70% 45%; /* Tealish for + Add */
+    --add-button-bg: 170 80% 40%; /* Darker teal for better visibility */
 
 
     /* Sidebar specific colors */
-    --sidebar-background: hsl(var(--card));
-    --sidebar-foreground: hsl(var(--card-foreground));
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 225 30% 15%;
     --sidebar-primary: hsl(var(--primary));
     --sidebar-primary-foreground: hsl(var(--primary-foreground));
     --sidebar-accent: hsl(var(--secondary));
@@ -59,10 +59,10 @@
 
     /* Chart colors */
     --chart-1: 245 76% 58%; /* primary */
-    --chart-2: 45 100% 58%; /* accent */
-    --chart-3: 170 70% 45%; /* add-button-bg */
-    --chart-4: 350 80% 60%; /* text-kcal */
-    --chart-5: 180 60% 50%; /* text-protein */
+    --chart-2: 45 95% 55%; /* accent */
+    --chart-3: 170 80% 40%; /* add-button-bg */
+    --chart-4: 350 90% 55%; /* text-kcal */
+    --chart-5: 180 70% 40%; /* text-protein */
   }
 
   .dark {
@@ -238,15 +238,15 @@
 .bg-pattern-food {
   background-color: hsla(var(--background));
   background-image: 
-    radial-gradient(circle at 25px 25px, hsla(var(--primary)/.03) 2%, transparent 0%), 
-    radial-gradient(circle at 75px 75px, hsla(var(--primary)/.03) 2%, transparent 0%);
+    radial-gradient(circle at 25px 25px, hsla(var(--primary)/.07) 2%, transparent 0%), 
+    radial-gradient(circle at 75px 75px, hsla(var(--primary)/.07) 2%, transparent 0%);
   background-size: 100px 100px;
 }
 
 .bg-pattern-dots {
   background-image: 
-    radial-gradient(hsla(var(--primary)/.15) 1px, transparent 1px), 
-    radial-gradient(hsla(var(--primary)/.1) 1px, transparent 1px);
+    radial-gradient(hsla(var(--primary)/.2) 1px, transparent 1px), 
+    radial-gradient(hsla(var(--primary)/.15) 1px, transparent 1px);
   background-size: 20px 20px;
   background-position: 0 0, 10px 10px;
 }
@@ -410,5 +410,27 @@
   
   .glass-button {
     @apply glass hover:bg-white/40 dark:hover:bg-black/40 transition-colors;
+  }
+
+  /* Enhanced card styling for light mode */
+  :root {
+    --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  .dark {
+    --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  }
+
+  .light-mode-card {
+    @apply bg-white border border-gray-100 shadow-md;
+    box-shadow: var(--card-shadow);
+  }
+
+  .light-mode-card-hover {
+    @apply transition-all duration-300;
+  }
+  .light-mode-card-hover:hover {
+    @apply shadow-lg;
+    transform: translateY(-2px);
   }
 }

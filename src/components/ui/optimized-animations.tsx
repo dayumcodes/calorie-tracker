@@ -44,8 +44,8 @@ export const AnimatedBackground = memo(() => {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
       {/* Large circle gradient */}
-      <div className="absolute -top-1/4 -left-1/4 w-1/2 h-1/2 bg-gradient-to-br from-primary/20 to-primary/5 dark:from-primary/10 dark:to-transparent rounded-full blur-3xl" />
-      <div className="absolute -bottom-1/4 -right-1/4 w-1/2 h-1/2 bg-gradient-to-tl from-primary/20 to-primary/5 dark:from-primary/10 dark:to-transparent rounded-full blur-3xl" />
+      <div className="absolute -top-1/4 -left-1/4 w-1/2 h-1/2 bg-gradient-to-br from-primary/30 to-primary/10 dark:from-primary/10 dark:to-transparent rounded-full blur-3xl" />
+      <div className="absolute -bottom-1/4 -right-1/4 w-1/2 h-1/2 bg-gradient-to-tl from-primary/30 to-primary/10 dark:from-primary/10 dark:to-transparent rounded-full blur-3xl" />
       
       {/* Conditionally render particles only if initialized and not on low-end devices */}
       {isInitialized && particleCount > 0 && (
@@ -53,7 +53,7 @@ export const AnimatedBackground = memo(() => {
           {particleProps.map((props, i) => (
             <motion.div
               key={`particle-${i}`}
-              className="absolute rounded-full bg-primary/30 dark:bg-primary/20"
+              className="absolute rounded-full bg-primary/40 dark:bg-primary/20"
               style={{
                 top: props.top,
                 left: props.left,

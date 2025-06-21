@@ -39,7 +39,11 @@ export interface UserProfile {
   email: string;
   avatarUrl?: string;
   age?: number;
+  height?: number;  // in centimeters
+  weight?: number;  // in kilograms
   gender?: "male" | "female" | "other";
+  heightUnit?: "cm" | "ft"; // Unit for height (centimeters or feet-inches)
+  weightUnit?: "kg" | "lbs"; // Unit for weight (kilograms or pounds)
   savedDietCharts?: SavedDietChart[];
 }
 
@@ -57,4 +61,14 @@ export interface BlogPost {
   imageUrl: string;
   imageHint?: string;
   readMoreLink: string; // This will be used to construct the dynamic route
+  author?: string | {
+    name: string;
+    role: string;
+    imageUrl: string;
+  };
+  authorRole?: string;
+  authorImage?: string;
+  publishDate?: string;
+  category?: string;
+  content?: string;
 }

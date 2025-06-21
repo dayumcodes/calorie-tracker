@@ -20,7 +20,10 @@ import {
   FileText,
   Apple,
   Plus,
-  Eye
+  Eye,
+  Scale,
+  Ruler,
+  Mail
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -145,6 +148,19 @@ export default function ProfilePage() {
     return gender.charAt(0).toUpperCase() + gender.slice(1);
   };
 
+  // Format height in feet-inches when the unit is feet
+  const formatHeight = (height?: number, unit?: string) => {
+    if (!height) return "";
+    
+    if (unit === "ft") {
+      const feet = Math.floor(height / 12);
+      const inches = Math.round(height % 12);
+      return `${feet}'${inches}"`;
+    }
+    
+    return `${height} ${unit || "cm"}`;
+  };
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
@@ -162,102 +178,151 @@ export default function ProfilePage() {
         transition={{ duration: 0.5 }}
       >
         {/* Profile Header Card */}
-        <Card className="border-0 shadow-lg bg-gradient-to-br from-primary/80 to-primary mb-6 text-primary-foreground overflow-hidden">
-          <CardContent className="p-6 relative">
-            {/* Background Pattern */}
-            <div className="absolute top-0 left-0 right-0 bottom-0 opacity-10 pointer-events-none">
-              <svg width="100%" height="100%">
-                <pattern id="pattern-circles" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse" patternContentUnits="userSpaceOnUse">
-                  <circle id="pattern-circle" cx="20" cy="20" r="3.5" fill="none" stroke="currentColor" strokeWidth="1"></circle>
-                </pattern>
-                <rect id="rect" x="0" y="0" width="100%" height="100%" fill="url(#pattern-circles)"></rect>
+        <Card className="border-0 shadow-xl bg-gradient-to-r from-primary/90 via-primary to-primary/80 mb-6 text-primary-foreground overflow-hidden rounded-xl">
+          <CardContent className="p-0 relative">
+            {/* Modern Background Pattern */}
+            <div className="absolute top-0 left-0 right-0 bottom-0 opacity-15 pointer-events-none">
+              <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <pattern id="wave-pattern" x="0" y="0" width="150" height="150" patternUnits="userSpaceOnUse">
+                    <path d="M0,75 C30,52 45,98 75,75 C105,52 120,98 150,75 C180,52 195,98 225,75 C255,52 270,98 300,75" 
+                          fill="none" 
+                          stroke="currentColor" 
+                          strokeWidth="1" />
+                    <path d="M0,112 C30,90 45,135 75,112 C105,90 120,135 150,112 C180,90 195,135 225,112 C255,90 270,135 300,112" 
+                          fill="none" 
+                          stroke="currentColor" 
+                          strokeWidth="1" />
+                    <path d="M0,37 C30,15 45,60 75,37 C105,15 120,60 150,37 C180,15 195,60 225,37 C255,15 270,60 300,37" 
+                          fill="none" 
+                          stroke="currentColor" 
+                          strokeWidth="1" />
+                  </pattern>
+                </defs>
+                <rect x="0" y="0" width="100%" height="100%" fill="url(#wave-pattern)" />
               </svg>
             </div>
             
-            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 relative z-10">
-              {isLoading ? (
-                <Skeleton className="h-24 w-24 rounded-full" />
-              ) : (
-                <motion.div 
-                  className="relative"
-                  onHoverStart={() => setAvatarHover(true)}
-                  onHoverEnd={() => setAvatarHover(false)}
-                  whileHover={{ scale: 1.05 }}
-                >
-                  <div className="relative">
-                    <Avatar className="h-24 w-24 border-4 border-primary-foreground/20 shadow-xl">
-                      <AvatarImage 
-                        src={userProfile.avatarUrl} 
-                        alt={userProfile.name || "User"} 
-                      />
-                      <AvatarFallback className="text-3xl">
-                        {userProfile.name?.charAt(0).toUpperCase() || "U"}
-                      </AvatarFallback>
-                    </Avatar>
-                    
-                    <AnimatePresence>
-                      {avatarHover && (
-                        <motion.div
-                          initial={{ opacity: 0, scale: 0.8 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          exit={{ opacity: 0, scale: 0.8 }}
-                          className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center"
-                        >
-                          <Camera className="h-8 w-8 text-white" />
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                    
-                    <Link href="/profile/edit" passHref>
-                      <Button
-                        variant="secondary"
-                        size="icon"
-                        className="absolute bottom-0 right-0 rounded-full h-8 w-8 shadow-lg"
-                      >
-                        <Pencil className="h-3.5 w-3.5" />
-                      </Button>
-                    </Link>
-                  </div>
-                </motion.div>
-              )}
-              
-              <div className="flex flex-col items-center sm:items-start space-y-1 sm:space-y-2 flex-1">
-                {isLoading ? (
+            {/* Glowing Accent */}
+            <div className="absolute -top-16 -right-16 w-32 h-32 bg-white/20 rounded-full blur-2xl"></div>
+            <div className="absolute -bottom-16 -left-16 w-28 h-28 bg-white/10 rounded-full blur-2xl"></div>
+            
+            {/* Content Container with Padding */}
+            <div className="p-5 relative z-10">
+              {/* Header Top Section with Stats */}
+              <div className="flex flex-wrap gap-2 mb-3 justify-end">
+                {!isLoading && (
                   <>
-                    <Skeleton className="h-7 w-40" />
-                    <Skeleton className="h-5 w-32" />
-                  </>
-                ) : (
-                  <>
-                    <h1 className="text-2xl font-bold">{userProfile.name || "Guest User"}</h1>
-                    <div className="flex flex-wrap gap-2 justify-center sm:justify-start">
-                      {userProfile.gender && (
-                        <Badge variant="secondary" className="font-normal py-0.5">
-                          <User className="h-3 w-3 mr-1" />
-                          {getGenderLabel(userProfile.gender)}
-                        </Badge>
-                      )}
-                      {userProfile.age && (
-                        <Badge variant="secondary" className="font-normal py-0.5">
-                          <Calendar className="h-3 w-3 mr-1" />
-                          {userProfile.age} years
-                        </Badge>
-                      )}
-                      {userProfile.email && (
-                        <Badge variant="secondary" className="font-normal py-0.5 max-w-[180px] truncate">
-                          {userProfile.email}
-                        </Badge>
-                      )}
-                    </div>
+                    {userProfile.weight && (
+                      <Badge variant="outline" className="bg-white/10 text-white border-white/20 font-medium py-1 px-2">
+                        <Scale className="h-3 w-3 mr-1 opacity-80" />
+                        {userProfile.weight} {userProfile.weightUnit || "kg"}
+                      </Badge>
+                    )}
+                    {userProfile.height && (
+                      <Badge variant="outline" className="bg-white/10 text-white border-white/20 font-medium py-1 px-2">
+                        <Ruler className="h-3 w-3 mr-1 opacity-80" />
+                        {formatHeight(userProfile.height, userProfile.heightUnit)}
+                      </Badge>
+                    )}
+                    {userProfile.age && (
+                      <Badge variant="outline" className="bg-white/10 text-white border-white/20 font-medium py-1 px-2">
+                        <Calendar className="h-3 w-3 mr-1 opacity-80" />
+                        {userProfile.age} years
+                      </Badge>
+                    )}
                   </>
                 )}
+              </div>
+              
+              {/* Main Profile Content */}
+              <div className="flex flex-col md:flex-row items-center md:items-start gap-5 relative">
+                {isLoading ? (
+                  <Skeleton className="h-24 w-24 rounded-full" />
+                ) : (
+                  <motion.div 
+                    className="relative"
+                    onHoverStart={() => setAvatarHover(true)}
+                    onHoverEnd={() => setAvatarHover(false)}
+                    whileHover={{ scale: 1.05 }}
+                  >
+                    <div className="relative">
+                      <div className="absolute -inset-1.5 bg-white/20 rounded-full blur-md"></div>
+                      <Avatar className="h-24 w-24 border-4 border-white/30 shadow-2xl relative">
+                        <AvatarImage 
+                          src={userProfile.avatarUrl} 
+                          alt={userProfile.name || "User"} 
+                          className="object-cover"
+                        />
+                        <AvatarFallback className="text-2xl bg-primary-foreground/10 text-white">
+                          {userProfile.name?.charAt(0).toUpperCase() || "U"}
+                        </AvatarFallback>
+                      </Avatar>
+                      
+                      <AnimatePresence>
+                        {avatarHover && (
+                          <motion.div
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.8 }}
+                            className="absolute inset-0 bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center"
+                          >
+                            <Camera className="h-7 w-7 text-white" />
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                      
+                      <Link href="/profile/edit" passHref>
+                        <Button
+                          variant="secondary"
+                          size="icon"
+                          className="absolute bottom-0 right-0 rounded-full h-8 w-8 shadow-lg bg-white/90 hover:bg-white text-primary"
+                        >
+                          <Pencil className="h-3.5 w-3.5" />
+                        </Button>
+                      </Link>
+                    </div>
+                  </motion.div>
+                )}
                 
-                <div className="flex gap-2 mt-3">
-                  <Link href="/profile/edit">
-                    <Button size="sm" variant="secondary" className="h-8">
-                      Edit Profile
-                    </Button>
-                  </Link>
+                <div className="flex flex-col items-center md:items-start space-y-2 flex-1">
+                  {isLoading ? (
+                    <>
+                      <Skeleton className="h-7 w-40" />
+                      <Skeleton className="h-4 w-32" />
+                    </>
+                  ) : (
+                    <>
+                      <h1 className="text-2xl font-bold tracking-tight">{userProfile.name || "Guest User"}</h1>
+                      
+                      <div className="flex flex-wrap gap-2 justify-center md:justify-start">
+                        {userProfile.gender && (
+                          <Badge variant="secondary" className="font-normal py-0.5 bg-white/20 hover:bg-white/30 border-transparent text-white">
+                            <User className="h-3 w-3 mr-1 opacity-80" />
+                            {getGenderLabel(userProfile.gender)}
+                          </Badge>
+                        )}
+                        
+                        {userProfile.email && (
+                          <Badge variant="secondary" className="font-normal py-0.5 bg-white/20 hover:bg-white/30 border-transparent text-white max-w-[220px] truncate">
+                            <Mail className="h-3 w-3 mr-1 opacity-80" />
+                            {userProfile.email}
+                          </Badge>
+                        )}
+                      </div>
+                      
+                      <div className="flex gap-2 mt-1">
+                        <Link href="/profile/edit">
+                          <Button size="sm" variant="secondary" className="h-8 px-3 bg-white text-primary hover:bg-white/90 shadow-md">
+                            Edit Profile
+                          </Button>
+                        </Link>
+                        <Button size="sm" variant="outline" className="h-8 px-3 bg-transparent border-white/30 text-white hover:bg-white/10 hover:border-white/50">
+                          Share
+                        </Button>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -337,11 +402,7 @@ export default function ProfilePage() {
           </CardContent>
         </Card>
         
-        {/* App Version */}
-        <div className="mt-8 text-center text-xs text-muted-foreground">
-          <p>Calorie Tracker v1.0.0</p>
-          <p className="mt-1">© 2025 All Rights Reserved</p>
-        </div>
+       
 
         {/* Saved Diet Charts Section */}
         <Card className="mt-6">
@@ -429,6 +490,11 @@ export default function ProfilePage() {
             )}
           </CardContent>
         </Card>
+         {/* App Version */}
+         <div className="mt-8 text-center text-xs text-muted-foreground">
+          <p>Calorie Tracker v1.0.0</p>
+          <p className="mt-1">© 2025 All Rights Reserved</p>
+        </div>
       </motion.div>
     </div>
   );
