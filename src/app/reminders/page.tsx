@@ -7,10 +7,11 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { useNotificationService } from "@/lib/notification-service";
 import { 
   BellRing, Save, CheckCircle, Clock, Droplets, Scale, 
   CalendarCheck, RefreshCw, BellDot, Bell, BellOff, 
-  Sparkles, AlarmCheck, Calendar
+  Sparkles, AlarmCheck, Calendar, Smartphone, Globe
 } from "lucide-react";
 import {
   Select,
@@ -76,7 +77,16 @@ export default function RemindersPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [savedSettings, setSavedSettings] = useState<ReminderSettings | null>(null);
   const [activeReminder, setActiveReminder] = useState<keyof ReminderSettings | null>(null);
+  const [notificationStatus, setNotificationStatus] = useState<'idle' | 'requesting' | 'granted' | 'denied'>('idle');
   const { toast } = useToast();
+  const { 
+    initializeNotifications, 
+    subscribeToNotifications, 
+    unsubscribeFromNotifications, 
+    showTestNotification,
+    isSupported,
+    subscription 
+  } = useNotificationService();
 
   // Load settings from localStorage
   useEffect(() => {
@@ -87,6 +97,13 @@ export default function RemindersPage() {
       setSavedSettings(parsedSettings);
     }
   }, []);
+
+  // Initialize notifications on component mount
+  useEffect(() => {
+    if (isSupported) {
+      initializeNotifications();
+    }
+  }, [isSupported, initializeNotifications]);
 
   const handleSwitchChange = (checked: boolean, name: keyof ReminderSettings) => {
     setSettings((prev) => ({ ...prev, [name]: checked }));
@@ -100,22 +117,101 @@ export default function RemindersPage() {
     setSettings((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // Simulate API call
-    setTimeout(() => {
-      // Save settings and update the UI
+    
+    try {
+      // Save settings to localStorage
       localStorage.setItem("reminderSettings", JSON.stringify(settings));
       setSavedSettings(settings);
+      
+      // Initialize notifications if supported
+      if (isSupported) {
+        await initializeNotifications();
+      }
+      
       toast({
         title: "Reminders Updated!",
-        description: "Your reminder preferences have been saved.",
+        description: "Your reminder preferences have been saved and notifications are now active.",
         variant: "default",
         action: <CheckCircle className="text-green-500" />,
       });
+    } catch (error) {
+      console.error('Error saving reminder settings:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save reminder settings. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
       setIsLoading(false);
-    }, 800);
+    }
+  };
+
+  const handleEnableNotifications = async () => {
+    setNotificationStatus('requesting');
+    
+    try {
+      const subscription = await subscribeToNotifications();
+      if (subscription) {
+        setNotificationStatus('granted');
+        toast({
+          title: "Notifications Enabled!",
+          description: "You'll now receive push notifications for your reminders.",
+          variant: "default",
+        });
+      } else {
+        setNotificationStatus('denied');
+        toast({
+          title: "Permission Denied",
+          description: "Please enable notifications in your browser settings to receive reminders.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      setNotificationStatus('denied');
+      toast({
+        title: "Error",
+        description: "Failed to enable notifications. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDisableNotifications = async () => {
+    try {
+      await unsubscribeFromNotifications();
+      setNotificationStatus('idle');
+      toast({
+        title: "Notifications Disabled",
+        description: "Push notifications have been disabled.",
+        variant: "default",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to disable notifications. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleTestNotification = async () => {
+    try {
+      await showTestNotification();
+      toast({
+        title: "Test Notification Sent!",
+        description: "Check if you received the notification.",
+        variant: "default",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to send test notification. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const resetToDefaults = () => {
@@ -153,6 +249,64 @@ export default function RemindersPage() {
           <p className="text-muted-foreground max-w-lg mx-auto">
             Set up personalized notifications to help you stay on track with your health and nutrition goals.
           </p>
+        </motion.div>
+
+        {/* Notification Status Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="mb-6"
+        >
+          <Card className="border-primary/20 bg-primary/5">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="p-2 rounded-lg bg-primary/20">
+                    {isSupported ? <Smartphone className="h-5 w-5 text-primary" /> : <Globe className="h-5 w-5 text-primary" />}
+                  </div>
+                  <div>
+                    <h3 className="font-medium">Notification Status</h3>
+                    <p className="text-sm text-muted-foreground">
+                      {isSupported 
+                        ? subscription 
+                          ? "Push notifications enabled" 
+                          : "Local notifications only"
+                        : "Notifications not supported in this browser"
+                      }
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  {isSupported && !subscription && (
+                    <Button
+                      size="sm"
+                      onClick={handleEnableNotifications}
+                      disabled={notificationStatus === 'requesting'}
+                    >
+                      {notificationStatus === 'requesting' ? (
+                        <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                      ) : (
+                        <Bell className="h-4 w-4 mr-2" />
+                      )}
+                      Enable Push
+                    </Button>
+                  )}
+                  
+                  {isSupported && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={handleTestNotification}
+                    >
+                      Test
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </motion.div>
 
         <Card className="overflow-hidden border border-border/40 shadow-lg bg-gradient-to-b from-background to-muted/10">

@@ -9,7 +9,10 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "UIBackgroundModes": ["remote-notification"]
+      }
     },
     "android": {
       "package": "com.calorietracker.app",
@@ -20,7 +23,11 @@
       },
       "permissions": [
         "INTERNET",
-        "CAMERA"
+        "CAMERA",
+        "NOTIFICATIONS",
+        "VIBRATE",
+        "RECEIVE_BOOT_COMPLETED",
+        "SCHEDULE_EXACT_ALARM"
       ],
       "edgeToEdgeEnabled": true
     },
@@ -44,6 +51,13 @@
         "expo-camera",
         {
           "cameraPermission": "Allow Calorie Tracker to access your camera to take food photos for analysis."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/favicon.png",
+          "color": "#ffffff"
         }
       ]
     ],
