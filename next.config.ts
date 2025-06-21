@@ -2,6 +2,8 @@ import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
   /* config options here */
+  output: 'export',
+  distDir: 'out',
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -9,6 +11,7 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',
@@ -17,6 +20,12 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // Handle special routes
+  async rewrites() {
+    return [];
+  },
+  // Set strict mode to false to avoid double rendering in development
+  reactStrictMode: false,
 };
 
 export default nextConfig;

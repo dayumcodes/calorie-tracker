@@ -61,37 +61,27 @@ const MoonIcon = () => (
 export const ThemeToggle = () => {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  const [animating, setAnimating] = useState(false);
+  // Track if we are animating and which direction (null = not animating)
+  const [goingToDark, setGoingToDark] = useState<null | boolean>(null);
 
-  // Ensure component is mounted before accessing theme
   useEffect(() => {
     setMounted(true);
   }, []);
 
   if (!mounted) return null;
-  
+
   const isDark = theme === "dark";
-  
+
   const handleToggle = () => {
-    if (animating) return;
-    
-    setAnimating(true);
+    if (goingToDark !== null) return; // Prevent double click during animation
     const isGoingDark = theme === "light";
-    
-    // If currently light, animate to dark
-    if (isGoingDark) {
-      // Start animation, then set theme after delay
-      setTimeout(() => {
-        setTheme("dark");
-        setTimeout(() => setAnimating(false), 1500); // Allow animation to complete
-      }, 300);
-    } else {
-      // If dark, switch to light immediately
-      setTimeout(() => {
-        setTheme("light");
-        setTimeout(() => setAnimating(false), 1500); // Allow animation to complete
-      }, 300);
-    }
+    setGoingToDark(isGoingDark);
+    // Wait for animation, then set theme
+    setTimeout(() => {
+      setTheme(isGoingDark ? "dark" : "light");
+      // Wait for fade out, then clear animation state
+      setTimeout(() => setGoingToDark(null), 1500);
+    }, 1200); // Start theme change after most of the animation
   };
 
   return (
@@ -106,22 +96,12 @@ export const ThemeToggle = () => {
         }`}
         aria-label="Toggle theme"
       >
-        {isDark ? (
-          <>
-            <MoonIcon />
-            {/* <span className="text-sm font-medium">Light</span> */}
-          </>
-        ) : (
-          <>
-            <SunIcon />
-            {/* <span className="text-sm font-medium">Dark</span> */}
-          </>
-        )}
+        {isDark ? <MoonIcon /> : <SunIcon />}
       </button>
-      
-      {/* Full screen overlay for theme transition */}
+
+      {/* Full screen overlay for theme transition - based on goingToDark */}
       <AnimatePresence>
-        {animating && (
+        {goingToDark !== null && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -135,14 +115,14 @@ export const ThemeToggle = () => {
               animate={{ opacity: 1 }}
               transition={{ duration: 1.8, ease: "easeOut" }}
               className={`absolute inset-0 ${
-                isDark 
-                  ? "bg-gradient-to-b from-slate-900 via-slate-900 to-indigo-950"     // Dark mode background for light→dark
-                  : "bg-gradient-to-b from-blue-400 via-blue-500 to-sky-300" // Light mode background for dark→light
+                goingToDark
+                  ? "bg-gradient-to-b from-slate-900 via-slate-900 to-indigo-950"
+                  : "bg-gradient-to-b from-blue-400 via-blue-500 to-sky-300"
               }`}
             />
-            
+
             {/* Stars that twinkle in - only show when going to dark mode */}
-            {!isDark && (
+            {goingToDark && (
               <div className="absolute inset-0">
                 {[...Array(20)].map((_, i) => (
                   <motion.div
@@ -165,9 +145,9 @@ export const ThemeToggle = () => {
                 ))}
               </div>
             )}
-            
-            {/* Moon rising animation - show when going to light mode */}
-            {isDark && (
+
+            {/* Moon rising animation - show when going to dark mode */}
+            {goingToDark && (
               <motion.div
                 initial={{ y: "110vh", x: "10vw", opacity: 0 }}
                 animate={{ 
@@ -184,7 +164,6 @@ export const ThemeToggle = () => {
                   filter: "drop-shadow(0 0 60px rgba(255, 248, 230, 0.6))"
                 }}
               >
-                {/* Custom moon SVG - larger version for animation */}
                 <svg 
                   xmlns="http://www.w3.org/2000/svg" 
                   width="180" 
@@ -197,7 +176,6 @@ export const ThemeToggle = () => {
                   strokeLinejoin="round" 
                   className="text-amber-100"
                 >
-                  {/* Simple crescent moon shape */}
                   <path 
                     d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" 
                     fill="#FEFCE8"
@@ -206,9 +184,9 @@ export const ThemeToggle = () => {
                 </svg>
               </motion.div>
             )}
-            
-            {/* Sun rising animation - show when going to dark mode */}
-            {!isDark && (
+
+            {/* Sun rising animation - show when going to light mode */}
+            {!goingToDark && (
               <motion.div
                 initial={{ y: "110vh", x: "70vw", opacity: 0 }}
                 animate={{ 
@@ -225,7 +203,6 @@ export const ThemeToggle = () => {
                   filter: "drop-shadow(0 0 60px rgba(251, 191, 36, 0.7))"
                 }}
               >
-                {/* Custom sun SVG - larger version for animation */}
                 <svg 
                   xmlns="http://www.w3.org/2000/svg" 
                   width="180" 
@@ -281,7 +258,6 @@ export const ThemeToggle = () => {
                     <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" stroke="#FBBF24" strokeWidth="2" />
                   </motion.g>
                 </svg>
-                
                 {/* Sun ray particles */}
                 {[...Array(12)].map((_, i) => (
                   <motion.div
