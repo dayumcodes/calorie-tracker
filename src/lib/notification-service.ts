@@ -62,6 +62,8 @@ class NotificationService {
         return null;
       }
 
+      console.log("VAPID KEY:", process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY);
+
       // Get VAPID public key (you'll need to generate this)
       const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
       if (!vapidPublicKey) {

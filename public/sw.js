@@ -41,7 +41,7 @@ self.addEventListener('push', (event) => {
         }
       ],
       requireInteraction: true,
-      tag: 'calorie-reminder'
+      tag: 'calorie-reminder-' + Date.now()
     };
 
     event.waitUntil(

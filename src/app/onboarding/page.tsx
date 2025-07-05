@@ -230,12 +230,10 @@ GoalOption.displayName = "GoalOption";
 interface FastFadeInProps {
   children: React.ReactNode;
   delay?: number;
-  key?: string;
 }
 
-const FastFadeIn = ({ children, delay = 0, key }: FastFadeInProps) => (
+const FastFadeIn = ({ children, delay = 0 }: FastFadeInProps) => (
   <motion.div
-    key={key}
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
     transition={{ duration: 0.3, delay }}

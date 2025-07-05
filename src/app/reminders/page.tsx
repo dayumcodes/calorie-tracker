@@ -279,28 +279,29 @@ export default function RemindersPage() {
                 </div>
                 
                 <div className="flex items-center space-x-2">
-                  {isSupported && !subscription && (
-                    <Button
-                      size="sm"
-                      onClick={handleEnableNotifications}
-                      disabled={notificationStatus === 'requesting'}
-                    >
-                      {notificationStatus === 'requesting' ? (
-                        <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                      ) : (
-                        <Bell className="h-4 w-4 mr-2" />
-                      )}
-                      Enable Push
-                    </Button>
-                  )}
-                  
                   {isSupported && (
                     <Button
                       size="sm"
-                      variant="outline"
-                      onClick={handleTestNotification}
+                      onClick={handleEnableNotifications}
+                      disabled={!!subscription || notificationStatus === 'requesting'}
+                      variant={subscription ? 'default' : 'outline'}
                     >
-                      Test
+                      {subscription ? (
+                        <>
+                          <CheckCircle className="h-4 w-4 mr-2 text-green-500" />
+                          Notifications Enabled
+                        </>
+                      ) : notificationStatus === 'requesting' ? (
+                        <>
+                          <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                          Enabling...
+                        </>
+                      ) : (
+                        <>
+                          <Bell className="h-4 w-4 mr-2" />
+                          Enable Notifications
+                        </>
+                      )}
                     </Button>
                   )}
                 </div>
